@@ -1,0 +1,21 @@
+ .productCard{ 
+       height: 500px;
+} 
+
+.card-body img{ 
+        height: 100%;
+        width: 100%;
+        flex:1;
+        /* object-fit: cover; */
+}
+
+
+
+
+
+.card-header h3{  
+     overflow: hidden;
+     text-overflow:ellipsis; 
+     white-space: nowrap;
+        
+}

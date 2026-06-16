@@ -12,7 +12,7 @@ const imgControl= document.getElementById('img');
 const addProduct= document.getElementById('addProduct');
 const updateProduct= document.getElementById('updateProduct');
 
-
+const spinner=  document.getElementById('spinner');
 let productArr = [];
 
 function snackbar(msg,icon){ 
@@ -32,7 +32,7 @@ function snackbar(msg,icon){
 
 
  function fetchProduct(){  
-
+       spinner.classList.remove('d-none');
     let xhr = new XMLHttpRequest() ;
         xhr.open('GET',product_url);
 
@@ -42,9 +42,13 @@ function snackbar(msg,icon){
           if(xhr.status>=200 && xhr.status<=299){ 
                   productArr = JSON.parse(xhr.response);
                      createCard(productArr.reverse());
-            
+       
+               spinner.classList.add('d-none');
+                       
             }else{ 
-               snackbar('error to fetch Api...!!', 'error');   
+               spinner.classList.add('d-none');
+              
+              snackbar('error to fetch Api...!!', 'error');   
             }
        }
 
@@ -92,7 +96,7 @@ function onSubmit(eve){
 
       productArr.push(newObj); 
 
-
+         spinner.classList.remove('d-none');
       let xhr= new XMLHttpRequest() ; 
        xhr.open('POST', product_url);
        xhr.send(JSON.stringify(newObj));
@@ -119,8 +123,13 @@ function onSubmit(eve){
                                     </div>` 
              productContainer.prepend(div);
              productForm.reset();
-
+              
+             spinner.classList.add('d-none');
+             snackbar('Product submitted successfully', 'success')
+             
          } else{ 
+              spinner.classList.add('d-none');
+             
              snackbar('failed to submit Product', 'error')
              }
          
@@ -129,17 +138,61 @@ function onSubmit(eve){
 
 } 
 
+function onRemove(ele){ 
+         let removeId=ele.closest('.col-md-4').id;  
+         
+         let removeUrl = `${BaseURL}/products/${removeId}`; 
+          
+  
+             Swal.fire({
+                  title: "Are you sure?",
+                  text: "You won't be able to revert this!",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#3085d6",
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Yes, delete it!"
+              }).then((result) => {
+                  if (result.isConfirmed){ 
+                         
+                        let xhr=  new XMLHttpRequest() ; 
+                            xhr.open('DELETE', removeUrl);
+                            xhr.send(null); 
+               
+                            xhr.onload = function(){ 
+                                 if(xhr.status>=200 && xhr.status<=299){ 
+                                        
+                                       ele.closest('.col-md-4').remove();
+               
+                                       snackbar('Product deleted successfully....!','success');
+                                       
+                                 } 
+               
+                            }
+                  }
+              });
 
+
+
+
+
+
+
+}
 
 
 function onEdit(ele){
+       spinner.classList.remove('d-none');
           let  editId= ele.closest('.col-md-4').id; 
+                   
               localStorage.setItem('EditId',editId);
          let editUrl= `${BaseURL}/products/${editId}`;
 
+         window.scrollTo({top:0, behavior:'smooth'});
          let xhr = new XMLHttpRequest(); 
-
-            xhr.open('GET', editUrl); 
+         
+            
+             xhr.open('GET', editUrl); 
             xhr.send(null);
             xhr.onload = function(){ 
                if(xhr.status>=200  && xhr.status<=299){ 
@@ -154,8 +207,11 @@ function onEdit(ele){
                   document.querySelectorAll('.btn-outline-danger').forEach((btn)=>{ 
                         btn.disabled=true; 
                   })
-
-
+                   spinner.classList.add('d-none')
+                  }else{ 
+                   spinner.classList.add('d-none')
+                    
+                   snackbar('Edit failed....!' ,'error')
                  }
 
             }
@@ -178,9 +234,13 @@ function onUpdate(){
             image:imgControl.value
 
        } ;
-
+         spinner.classList.remove('d-none');
+            
      let xhr= new XMLHttpRequest() ;
           xhr.open('PATCH', updateUrl);
+          xhr.setRequestHeader('content-type' , ' applicaiton/json'); 
+          xhr.setRequestHeader('Autho' , ' get token from'); 
+
           xhr.send(JSON.stringify(updateObj));
 
           xhr.onload = function (){ 
@@ -203,13 +263,19 @@ function onUpdate(){
                     addProduct.classList.remove('d-none'); 
                     updateProduct.classList.add('d-none');
                     productForm.reset();
-                  document.querySelectorAll('.btn-outline-danger').forEach((btn)=>{ 
+                  
+                    document.querySelectorAll('.btn-outline-danger').forEach((btn)=>{ 
                         btn.disabled= false;
+                   })
+                 
+                   spinner.classList.add('d-none');
+                  snackbar('product updated successfully..!', 'success');
+                 
+                }else{ 
+                  spinner.classList.add('d-none');
 
-                  })
-              }else{ 
-                 snackbar('update product failed', 'error')
-              }
+                 snackbar('update product failed', 'error');
+               }
           }
  
 }

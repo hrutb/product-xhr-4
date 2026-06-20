@@ -202,12 +202,15 @@ function onEdit(ele){
                      priceControl.value = editObj.price ;
                      imgControl.value = editObj.image;
                       
-                  addProduct.classList.add('d-none'); 
-                  updateProduct.classList.remove('d-none');
+                    addProduct.classList.add('d-none'); 
+                    updateProduct.classList.remove('d-none');
                   document.querySelectorAll('.btn-outline-danger').forEach((btn)=>{ 
                         btn.disabled=true; 
                   })
+                    
+
                    spinner.classList.add('d-none')
+                   window.scrollTo({top:0,behavior:'smooth'});
                   }else{ 
                    spinner.classList.add('d-none')
                     
@@ -270,7 +273,7 @@ function onUpdate(){
                  
                    spinner.classList.add('d-none');
                   snackbar('product updated successfully..!', 'success');
-                 
+                  div.scrollIntoView({block:'center',behavior:'smooth'});
                 }else{ 
                   spinner.classList.add('d-none');
 
